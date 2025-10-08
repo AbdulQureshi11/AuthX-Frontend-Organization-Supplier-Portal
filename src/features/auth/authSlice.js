@@ -1,11 +1,11 @@
-// src/features/authSlice.js
+// src/features/auth/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../../Utlis/baseURL";
 
 // 🔹 Initial state
 const initialState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem("user")) || null, // ✅ restore saved user
   token: localStorage.getItem("token") || null,
   loading: false,
   error: null,
@@ -37,16 +37,26 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+// 🔹 Auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    // ✅ restore user + token manually (for refresh)
+    setCredentials: (state, action) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+    },
+
+    // ✅ logout
     logout: (state) => {
       state.user = null;
       state.token = null;
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
+
   extraReducers: (builder) => {
     // 🔹 Login cases
     builder.addCase(loginUser.pending, (state) => {
@@ -57,6 +67,9 @@ const authSlice = createSlice({
       state.loading = false;
       state.user = action.payload.user;
       state.token = action.payload.token;
+
+      // ✅ Save both user & token
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
       localStorage.setItem("token", action.payload.token);
     });
     builder.addCase(loginUser.rejected, (state, action) => {
@@ -71,8 +84,7 @@ const authSlice = createSlice({
     });
     builder.addCase(registerUser.fulfilled, (state) => {
       state.loading = false;
-      // ❌ yahan user/token ko set nahi karna
-      // sirf registration success hoga
+      // ✅ Registration success only, user must login separately
     });
     builder.addCase(registerUser.rejected, (state, action) => {
       state.loading = false;
@@ -81,5 +93,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, setCredentials } = authSlice.actions;
 export default authSlice.reducer;

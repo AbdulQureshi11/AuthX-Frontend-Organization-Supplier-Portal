@@ -34,7 +34,7 @@ const LoginComponent = () => {
       if (user.role === "main") {
         navigate("/admin-dashboard");
       } else {
-        navigate("/sub-dashboard");
+        navigate("/user-dashboard");
       }
     }
   }, [user, token, navigate]);

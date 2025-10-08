@@ -27,7 +27,7 @@ const RegisterComponent = () => {
   const handleSubmit = (values, { resetForm }) => {
     dispatch(registerUser(values)).then((res) => {
       if (res.meta.requestStatus === "fulfilled") {
-        toast.success("🎉 Registration successful! Please login to continue.", {
+        toast.success("Registration successful! Please login to continue.", {
           position: "top-center",
           autoClose: 2000,
           theme: "colored",
@@ -35,7 +35,7 @@ const RegisterComponent = () => {
         resetForm();
 
         setTimeout(() => {
-          navigate("/");  // login page
+          navigate("/");
         }, 2000);
       }
     });
@@ -50,7 +50,6 @@ const RegisterComponent = () => {
 
   return (
     <div className="h-screen w-full flex items-center justify-center bg-black">
-      {/* 🔹 Toast container (for popup notifications) */}
       <ToastContainer />
 
       <div className="w-full max-w-[450px] p-3 rounded-2xl shadow-xl bg-white/10 backdrop-blur-xl border border-white/20">

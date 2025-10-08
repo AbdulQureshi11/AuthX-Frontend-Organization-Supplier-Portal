@@ -1,25 +1,48 @@
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, setCredentials } from "../../../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
+
 import { adminMenu } from "../../../Utlis/Dashboard";
 import Organization from "./Organization";
-import React, { useState } from "react";
 import Suppliers from "./Suppliers";
 import Configs from "./Configs";
 import Search from "./Search";
 import Users from "./Users";
 import Logs from "./Logs";
 
-// Redux
-import { useDispatch } from "react-redux";
-import { logout } from "../../../features/auth/authSlice";
-import { useNavigate } from "react-router-dom";
-
 const MainDashboardComponent = () => {
   const [selected, setSelected] = useState("Organization");
+  const [loading, setLoading] = useState(true); // ⏳ loader for smooth UI
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { user } = useSelector((state) => state.auth);
+  const [currentUser, setCurrentUser] = useState(user);
+
+  // ✅ Restore user from localStorage if Redux lost it (after refresh)
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    if (!user && storedUser && storedToken) {
+      const parsedUser = JSON.parse(storedUser);
+      setCurrentUser(parsedUser);
+      // 👇 restore Redux state
+      dispatch(setCredentials({ user: parsedUser, token: storedToken }));
+    } else if (user) {
+      setCurrentUser(user);
+    }
+
+    // small delay just to prevent flicker
+    setTimeout(() => setLoading(false), 300);
+  }, [user, dispatch]);
+
   const handleLogout = () => {
-    dispatch(logout());      
-    navigate("/");            
+    dispatch(logout());
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   const content = {
@@ -31,14 +54,38 @@ const MainDashboardComponent = () => {
     Search: <Search />,
   };
 
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-[#f5f7fa]">
+        <div className="text-gray-600 text-lg font-medium animate-pulse">
+          Loading dashboard...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex bg-[#f5f7fa] font-sans">
       {/* Sidebar */}
       <div className="w-[18%] bg-gradient-to-b from-[#0a192f] to-[#112240] text-white flex flex-col shadow-lg">
+        {/* Sidebar Top */}
         <div className="px-6 py-6 border-b border-gray-700/50">
           <h1 className="text-2xl font-semibold tracking-wide text-blue-200">
             Admin Panel
           </h1>
+
+          {/* Logged in User */}
+          {currentUser && (
+            <p className="mt-2 text-sm text-gray-300">
+              Welcome,{" "}
+              <span className="font-semibold text-white">
+                {currentUser?.name ||
+                  currentUser?.username ||
+                  currentUser?.email ||
+                  "User"}
+              </span>
+            </p>
+          )}
         </div>
 
         {/* Menu Items */}

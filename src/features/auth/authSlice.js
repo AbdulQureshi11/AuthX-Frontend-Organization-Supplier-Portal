@@ -3,15 +3,15 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../../Utlis/baseURL";
 
-// 🔹 Initial state
+// Initial state
 const initialState = {
-  user: JSON.parse(localStorage.getItem("user")) || null, // ✅ restore saved user
+  user: JSON.parse(localStorage.getItem("user")) || null, 
   token: localStorage.getItem("token") || null,
   loading: false,
   error: null,
 };
 
-// 🔹 Login thunk
+//Login User
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
@@ -24,7 +24,7 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// 🔹 Register thunk
+//Register User
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (formData, { rejectWithValue }) => {
@@ -37,18 +37,17 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// 🔹 Auth slice
+//Auth Slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // ✅ restore user + token manually (for refresh)
     setCredentials: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
     },
 
-    // ✅ logout
+    // Logout
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -58,7 +57,6 @@ const authSlice = createSlice({
   },
 
   extraReducers: (builder) => {
-    // 🔹 Login cases
     builder.addCase(loginUser.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -68,7 +66,6 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
 
-      // ✅ Save both user & token
       localStorage.setItem("user", JSON.stringify(action.payload.user));
       localStorage.setItem("token", action.payload.token);
     });
@@ -77,14 +74,12 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
 
-    // 🔹 Register cases
     builder.addCase(registerUser.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
     builder.addCase(registerUser.fulfilled, (state) => {
       state.loading = false;
-      // ✅ Registration success only, user must login separately
     });
     builder.addCase(registerUser.rejected, (state, action) => {
       state.loading = false;

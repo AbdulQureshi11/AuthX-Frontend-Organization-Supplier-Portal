@@ -9,7 +9,7 @@ import { userMenu } from "../../../Utlis/Dashboard";
 
 const SubDashboardComponent = () => {
   const [selected, setSelected] = useState("Suppliers");
-  const [loading, setLoading] = useState(true); // ⏳ handle refresh flicker
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -29,7 +29,6 @@ const SubDashboardComponent = () => {
       setCurrentUser(user);
     }
 
-    // small delay to smooth out loading
     setTimeout(() => setLoading(false), 300);
   }, [user, dispatch]);
 
@@ -37,7 +36,7 @@ const SubDashboardComponent = () => {
     dispatch(logout());
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    navigate("/"); // go back to login page
+    navigate("/");
   };
 
   const content = {

@@ -13,14 +13,14 @@ import Logs from "./Logs";
 
 const MainDashboardComponent = () => {
   const [selected, setSelected] = useState("Organization");
-  const [loading, setLoading] = useState(true); // ⏳ loader for smooth UI
+  const [loading, setLoading] = useState(true); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
   const [currentUser, setCurrentUser] = useState(user);
 
-  // ✅ Restore user from localStorage if Redux lost it (after refresh)
+  
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
@@ -28,13 +28,11 @@ const MainDashboardComponent = () => {
     if (!user && storedUser && storedToken) {
       const parsedUser = JSON.parse(storedUser);
       setCurrentUser(parsedUser);
-      // 👇 restore Redux state
       dispatch(setCredentials({ user: parsedUser, token: storedToken }));
     } else if (user) {
       setCurrentUser(user);
     }
 
-    // small delay just to prevent flicker
     setTimeout(() => setLoading(false), 300);
   }, [user, dispatch]);
 

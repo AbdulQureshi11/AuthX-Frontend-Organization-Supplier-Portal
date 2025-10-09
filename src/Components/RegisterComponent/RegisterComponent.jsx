@@ -1,28 +1,26 @@
-import React from 'react'
-import Inputfield from '../../Common/Inputfield'
-import { ErrorMessage, Form, Formik } from 'formik'
+import React from "react";
+import Inputfield from "../../Common/Inputfield";
+import { ErrorMessage, Form, Formik } from "formik";
 import * as Yup from "yup";
-import Primarybtn from '../../Common/Primarybtn';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../../features/auth/authSlice';
-
-// 🔹 Toastify
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Primarybtn from "../../Common/Primarybtn";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../../features/auth/authSlice";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RegisterComponent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { loading, error } = useSelector((state) => state.auth);
 
   const initialValues = {
-    name: '',
-    email: '',
-    password: '',
-    orgName: ''
-  }
+    name: "",
+    email: "",
+    password: "",
+    orgName: "",
+    address: "",
+  };
 
   const handleSubmit = (values, { resetForm }) => {
     dispatch(registerUser(values)).then((res) => {
@@ -33,27 +31,30 @@ const RegisterComponent = () => {
           theme: "colored",
         });
         resetForm();
-
         setTimeout(() => {
           navigate("/");
         }, 2000);
       }
     });
-  }
+  };
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('This Field is Required'),
-    email: Yup.string().email("Invalid email").required('This Field is Required'),
-    password: Yup.string().min(6, "Password must be at least 6 chars").required('This Field is Required'),
-    orgName: Yup.string().required('This Field is Required'),
+    name: Yup.string().required("This field is required"),
+    email: Yup.string()
+      .email("Invalid email")
+      .required("This field is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 chars")
+      .required("This field is required"),
+    orgName: Yup.string().required("This field is required"),
+    address: Yup.string().required("This field is required"),
   });
 
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-black">
+    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
       <ToastContainer />
 
-      <div className="w-full max-w-[450px] p-3 rounded-2xl shadow-xl bg-white/10 backdrop-blur-xl border border-white/20">
-        
+      <div className="w-full max-w-[500px] p-6 rounded-2xl shadow-2xl bg-white/10 backdrop-blur-lg border border-white/20">
         <h1 className="text-3xl font-bold text-center text-white mb-6 tracking-wide">
           Create Account
         </h1>
@@ -65,42 +66,45 @@ const RegisterComponent = () => {
         >
           {({ values, setFieldValue }) => (
             <Form className="space-y-5">
-              <div>
-                <Inputfield
-                  label="Full Name"
-                  name="name"
-                  type="text"
-                  placeholder="Enter your name"
-                  id="name"
-                  value={values?.name}
-                  onChange={(e) => setFieldValue('name', e.target.value)}
-                  className="text-white placeholder-gray-400"
-                />
-                <ErrorMessage
-                  name="name"
-                  component="div"
-                  className="font-semibold text-red-400 text-sm mt-1"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <Inputfield
+                    label="Full Name"
+                    name="name"
+                    type="text"
+                    placeholder="Enter your name"
+                    id="name"
+                    value={values?.name}
+                    onChange={(e) => setFieldValue("name", e.target.value)}
+                    className="text-white placeholder-gray-400"
+                  />
+                  <ErrorMessage
+                    name="name"
+                    component="div"
+                    className="font-semibold text-red-400 text-sm mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Inputfield
+                    label="Email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    id="email"
+                    value={values?.email}
+                    onChange={(e) => setFieldValue("email", e.target.value)}
+                    className="text-white placeholder-gray-400"
+                  />
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="font-semibold text-red-400 text-sm mt-1"
+                  />
+                </div>
               </div>
 
-              <div>
-                <Inputfield
-                  label="Email"
-                  name="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  id="email"
-                  value={values?.email}
-                  onChange={(e) => setFieldValue('email', e.target.value)}
-                  className="text-white placeholder-gray-400"
-                />
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="font-semibold text-red-400 text-sm mt-1"
-                />
-              </div>
-
+              {/* Password */}
               <div>
                 <Inputfield
                   label="Password"
@@ -109,7 +113,7 @@ const RegisterComponent = () => {
                   placeholder="Enter your password"
                   id="password"
                   value={values?.password}
-                  onChange={(e) => setFieldValue('password', e.target.value)}
+                  onChange={(e) => setFieldValue("password", e.target.value)}
                   className="text-white placeholder-gray-400"
                 />
                 <ErrorMessage
@@ -119,15 +123,16 @@ const RegisterComponent = () => {
                 />
               </div>
 
+              {/* Org Name */}
               <div>
                 <Inputfield
                   label="Organization Name"
                   name="orgName"
                   type="text"
-                  placeholder="Enter your organization"
+                  placeholder="Enter your organization name"
                   id="orgName"
                   value={values?.orgName}
-                  onChange={(e) => setFieldValue('orgName', e.target.value)}
+                  onChange={(e) => setFieldValue("orgName", e.target.value)}
                   className="text-white placeholder-gray-400"
                 />
                 <ErrorMessage
@@ -137,12 +142,33 @@ const RegisterComponent = () => {
                 />
               </div>
 
+              {/* Address */}
+              <div>
+                <Inputfield
+                  label="Organization Address"
+                  name="address"
+                  type="text"
+                  placeholder="Enter organization address"
+                  id="address"
+                  value={values?.address}
+                  onChange={(e) => setFieldValue("address", e.target.value)}
+                  className="text-white placeholder-gray-400"
+                />
+                <ErrorMessage
+                  name="address"
+                  component="div"
+                  className="font-semibold text-red-400 text-sm mt-1"
+                />
+              </div>
+
+              {/* Error */}
               {error && (
                 <div className="text-red-500 text-center text-sm font-medium">
                   {error}
                 </div>
               )}
 
+              {/* Submit Button */}
               <Primarybtn
                 type="submit"
                 disabled={loading}
@@ -154,6 +180,7 @@ const RegisterComponent = () => {
           )}
         </Formik>
 
+        {/* Footer */}
         <div className="text-center mt-6">
           <p className="text-gray-300 hover:text-white transition-all duration-200">
             Already have an account?{" "}
@@ -164,7 +191,7 @@ const RegisterComponent = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default RegisterComponent;

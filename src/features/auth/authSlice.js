@@ -1,17 +1,16 @@
-// src/features/auth/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../../Utlis/baseURL";
 
 // Initial state
 const initialState = {
-  user: JSON.parse(localStorage.getItem("user")) || null, 
+  user: JSON.parse(localStorage.getItem("user")) || null,
   token: localStorage.getItem("token") || null,
   loading: false,
   error: null,
 };
 
-//Login User
+// Login Thunk
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
@@ -24,7 +23,7 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-//Register User
+// Register Thunk
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (formData, { rejectWithValue }) => {
@@ -37,7 +36,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-//Auth Slice
+// Auth Slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -45,46 +44,62 @@ const authSlice = createSlice({
     setCredentials: (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
+
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
+      localStorage.setItem("token", action.payload.token);
+
+      if (action.payload.user?.organization?.id) {
+        localStorage.setItem("orgId", action.payload.user.organization.id);
+      }
     },
 
-    // Logout
     logout: (state) => {
       state.user = null;
       state.token = null;
-      localStorage.removeItem("token");
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("orgId");
     },
   },
 
   extraReducers: (builder) => {
-    builder.addCase(loginUser.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(loginUser.fulfilled, (state, action) => {
-      state.loading = false;
-      state.user = action.payload.user;
-      state.token = action.payload.token;
+    // Login
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
 
-      localStorage.setItem("user", JSON.stringify(action.payload.user));
-      localStorage.setItem("token", action.payload.token);
-    });
-    builder.addCase(loginUser.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
+        // Save in localStorage
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+        localStorage.setItem("token", action.payload.token);
 
-    builder.addCase(registerUser.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(registerUser.fulfilled, (state) => {
-      state.loading = false;
-    });
-    builder.addCase(registerUser.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
+        if (action.payload.user?.organization?.id) {
+          localStorage.setItem("orgId", action.payload.user.organization.id);
+        }
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Register
+    builder
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 

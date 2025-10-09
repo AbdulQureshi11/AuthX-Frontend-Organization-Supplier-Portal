@@ -3,7 +3,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseURL } from "../../Utlis/baseURL";
 
-// 🔹 Axios instance with token & baseURL
 const API = axios.create({ baseURL: `${baseURL}/users` });
 
 API.interceptors.request.use((req) => {
@@ -12,7 +11,7 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-// 🔹 Thunks
+// Thunks
 export const getUsers = createAsyncThunk(
   "users/getUsers",
   async (_, { rejectWithValue }) => {
@@ -73,7 +72,7 @@ export const deleteSubUser = createAsyncThunk(
   }
 );
 
-// 🔹 Slice
+// Slice
 const userSlice = createSlice({
   name: "user",
   initialState: {

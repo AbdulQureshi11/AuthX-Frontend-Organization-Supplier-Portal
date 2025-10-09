@@ -9,6 +9,7 @@ import logsReducer from "../features/logs/logsSlice";
 import orgReducer from "../features/org/orgSlice";
 import supplierReducer from "../features/suppliers/supplierSlice";
 import userReducer from "../features/users/usersSlice";
+import searchReducer from "../features/search/searchSlice";
 
 export default configureStore({
   reducer: {
@@ -19,5 +20,6 @@ export default configureStore({
     org: orgReducer,
     supplier: supplierReducer,
     user: userReducer,
+    search: searchReducer,
   },
 });

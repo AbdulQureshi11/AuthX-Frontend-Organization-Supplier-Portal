@@ -16,5 +16,5 @@ const Inputfield = ({ id, type, name, value, label, onChange, className, placeho
         </div>
     )
 }
-
+    
 export default Inputfield
